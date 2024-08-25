@@ -1,0 +1,126 @@
+Foundry:
+forge build   
+[⠢] Compiling...
+[⠊] Compiling 55 files with Solc 0.8.19
+[⠒] Solc 0.8.19 finished in 2.64s
+
+forge test -vv --isolate
+[⠊] Compiling...
+No files changed, compilation skipped
+
+Ran 3 tests for test/SendReceive.t.sol:SenderReceiverTest
+[PASS] test_SendReceiveAverage() (gas: 125177)
+Logs:
+  Number of iterations 50 - Gas used: 14740
+
+[PASS] test_SendReceiveMax() (gas: 134534)
+Logs:
+  Number of iterations 99 - Gas used: 24099
+
+[PASS] test_SendReceiveMin() (gas: 115592)
+Logs:
+  Number of iterations 0 - Gas used: 5190
+
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 1.85ms (1.54ms CPU time)
+
+Ran 1 test suite in 9.05ms (1.85ms CPU time): 3 tests passed, 0 failed, 0 skipped (3 total tests)
+
+| Number of iterations | Gas used |
+| -------------------- | -------- |
+| 0                    | 5190     |
+| 50                   | 14740    |
+| 99                   | 24099    |
+
+#######################################################
+HardHat:
+  Sender and Receiver
+Final Gas Usage Report:
+Number of iterations 0 - Gas used: 5168
+Number of iterations 50 - Gas used: 14718
+Number of iterations 99 - Gas used: 24077
+
+npx hardhat run scripts/deployment/deploySender.ts --network avalancheFuji
+Deploying Sender contract on avalancheFuji...
+wait for 20 blocks
+Sender contract deployed at: 0x1BC4Ab48FC773E9823B68D8e0f147ee27edC1f6e
+Verifying Sender contract on avalancheFuji...
+The contract 0x1BC4Ab48FC773E9823B68D8e0f147ee27edC1f6e has already been verified on Etherscan.
+https://testnet.snowtrace.io/address/0x1BC4Ab48FC773E9823B68D8e0f147ee27edC1f6e#code
+Sender contract verified on avalancheFuji!
+Writing to config file: ./scripts/generatedData.json {
+  ethereumSepolia: { receiver: '0xf51677b2f4210c0DB8b83e4C3056d828AC50D164' },
+  avalancheFuji: { sender: '0x1BC4Ab48FC773E9823B68D8e0f147ee27edC1f6e' }
+}
+
+npx hardhat run scripts/deployment/deployReceiver.ts --network ethereumSepolia
+Deploying Receiver contract on ethereumSepolia...
+wait for 5 blocks
+Receiver contract deployed at: 0x12753890c58d5c567Ee0Dd8870449bF29c56eDFC
+Verifying Receiver contract on ethereumSepolia...
+The contract 0x12753890c58d5c567Ee0Dd8870449bF29c56eDFC has already been verified on Etherscan.
+https://sepolia.etherscan.io/address/0x12753890c58d5c567Ee0Dd8870449bF29c56eDFC#code
+Receiver contract verified on ethereumSepolia!
+Writing to config file: ./scripts/generatedData.json {
+  ethereumSepolia: { receiver: '0x12753890c58d5c567Ee0Dd8870449bF29c56eDFC' },
+  avalancheFuji: { sender: '0x1BC4Ab48FC773E9823B68D8e0f147ee27edC1f6e' }
+}
+
+npx hardhat run scripts/configuration/allowlistingForSender.ts --network avalancheFuji
+Allowlisted: ethereumSepolia
+
+npx hardhat run scripts/configuration/allowlistingForReceiver.ts --network ethereumSepolia
+Allowlisted: avalancheFuji , 0x1BC4Ab48FC773E9823B68D8e0f147ee27edC1f6e
+
+npx hardhat run scripts/testing/sendCCIPMessages.ts --network avalancheFuji
+Approving 0x0b9d5D9136855f6FEc3c0993feE6E9CE8a297846 for 0x1BC4Ab48FC773E9823B68D8e0f147ee27edC1f6e. Allowance is 115792089237316195423570985008687907853269984665640564039457584007913129639935. Signer 0x1bF44b510871d45989E7524F97D7F2cB29aEB901...
+Number of iterations 0 - Gas limit: 5685 - Message Id: 0xb69bc7c29de14c01fb25ad4084c4c7d75b7cb3769d6f3098c89dc61bcfe5458d
+Number of iterations 50 - Gas limit: 16190 - Message Id: 0x29ce998c672ab00895697c40a8a5428a6a98f98daa4d9be0ce42ec471a42af53
+Number of iterations 99 - Gas limit: 26485 - Message Id: 0xa5d7db58c792e13c32a07576b6192b5d721f9d220e2d7547899740344eb76d40
+
+From Tenderly:
+"gas":{
+"gas_left":7963040
+"gas_used":209471
+"total_gas_used":36960
+}
+
+compare:
+| Number of iterations | Gas used during local testing | Gas limit on testnet | Gas used on testnet |
+| -------------------- | ----------------------------- | -------------------- | ------------------- |
+| 0                    | 5168                          | 5685                 | 5031                |
+| 50                   | 14718                         | 16190                | 14581               |
+| 99                   | 24077                         | 26485                | 23940               |
+
+
+
+
+#####################################################
+
+Offchain:
+PS C:\Users\chris\projects\CCIP\smart-contract-examples\ccip\estimate-gas\offchain> npm run estimate-gas-provider
+> offchain-simulator@1.0.0 estimate-gas-provider
+> ts-node src/estimateGasProvider.ts
+
+Final Gas Usage Report:
+Number of iterations: 0 - Gas used: 5378
+Number of iterations: 50 - Gas used: 14947
+Number of iterations: 99 - Gas used: 24324
+
+PS C:\Users\chris\projects\CCIP\smart-contract-examples\ccip\estimate-gas\offchain> npm run estimate-gas-tenderly
+
+> offchain-simulator@1.0.0 estimate-gas-tenderly
+> ts-node src/estimateGasTenderly.ts
+
+Final Gas Usage Report:
+Number of iterations: 0 - Gas used: 5031
+Number of iterations: 50 - Gas used: 14581
+Number of iterations: 99 - Gas used: 23940
+
+| Number of iterations | ethers.js provider Gas used | tenderly API Gas used |
+| -------------------- | --------------------------- | --------------------- |
+| 0                    | 5378                        | 5031                  |
+| 50                   | 14947                       | 14581                 |
+| 99                   | 24324                       | 23940                 |
+
+
+#######################################################
